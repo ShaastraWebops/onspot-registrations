@@ -36,6 +36,14 @@ angular.module('OnsiteRegistrationApp', [])
             })
         }
 
+        $scope.clear = function(){
+            $scope.festID = null
+            $scope.barcodeID = null
+            $scope.error_msg = null
+            $scope.profile = null
+            $scope.found = false
+        }
+
         $scope.updateUserBarcode = function(){
             if($scope.barcodeID.trim()==null)
                 return
