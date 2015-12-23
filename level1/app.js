@@ -6,7 +6,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 var userStore = db.createObjectStore('user', {keyPath:'festID'})
             })
        }])
-       .controller('MainCtrl',['$http', '$scope', '$indexedDB', function($http, $scope, $indexedDB){
+       .controller('MainCtrl',['$http', '$scope', '$indexedDB', '$interval', function($http, $scope, $indexedDB, $interval){
 
         $scope.found = false
         $scope.error_msg = null
@@ -17,19 +17,33 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
         }
 
         $scope.getAll = function(){
+            console.log("Syncing like a ship")
             $http({
                 method:'POST',
-                url:'http://localhost:8001/api/users/getAll'
+                url:'http://localhost:8001/api/users/servertime',
             })
-            .then(function(res){
-                console.log(res.data)
-                $indexedDB.openStore('user', function(store){
-                    store.upsert(res.data).then(function(response){
-                        console.log("Inside this now")
+            .then(function(time){
+                var url='http://localhost:8001/api/users/getAll'
+                if(localStorage['last_fetched_date']!=null)
+                    url = url + 'Since'
+                $http({
+                    method:'POST',
+                    url:url,
+                    data:{
+                        'last_fetched_date':localStorage['last_fetched_date']
+                    }
+                })
+                .then(function(res){
+                    $indexedDB.openStore('user', function(store){
+                        store.upsert(res.data).then(function(response){
+                            localStorage['last_fetched_date']=time.data.date;
+                        })
                     })
                 })
             })
         }
+
+        $interval($scope.getAll, 100*1000)
 
         $scope.getUserByFestID = function(){
             var festID = $scope.festID
