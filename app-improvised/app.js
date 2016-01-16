@@ -11,6 +11,9 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
             .upgradeDatabase(3, function(event, db, tx){
                 var editedStore = db.createObjectStore('new', {keyPath:'email'})
             })
+            .upgradeDatabase(4, function(event, db, tx){
+                var collegeStore = db.createObjectStore('college', {keyPath:'_id'})
+            })
        }])
        .service('Helper', ['$http', '$indexedDB', function($http, $indexedDB){
             function getUser(festID, local, server, failure){
@@ -30,13 +33,39 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 })
             }
 
-            function updateBarcode(festID, barcodeID, success_callback, failure_callback){
+            function getColleges(success_callback){
+                if(localStorage.collegelist!=null){
+                    $indexedDB.openStore('college', function(store){
+                        store.getAll().then(function(colleges){
+                            success_callback(colleges)
+                        })
+                    })
+                }
+                else
+                {
+                    $http({
+                        url:"http://localhost:8001/api/users/getColleges",
+                        method:'POST'
+                    })
+                    .success(function(response){
+                        $indexedDB.openStore('college', function(store){
+                            store.upsert(response).then(function(res){
+                                localStorage.collegelist="Yeah"
+                            });
+                        })
+                        success_callback(response)
+                    })
+                }
+            }
+
+            function updateBarcodeAndCollege(festID, barcodeID, college, success_callback, failure_callback){
                 $http({
                     method:'POST',
-                    url:'http://localhost:8001/api/users/barcode',
+                    url:'http://localhost:8001/api/users/onsiteEdit',
                     data: {
                         'festID': festID,
-                        'barcodeID': barcodeID
+                        'barcodeID': barcodeID,
+                        'collegeID': college._id
                     }
                 })
                 .success(success_callback)
@@ -58,7 +87,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                                     store.upsert(res)
                                 })
                             }
-                            updateBarcode(user.festID, user.barcodeID, success_callback, console.log)
+                            updateBarcodeAndCollege(user.festID, user.barcodeID, user.college, success_callback, console.log)
                         }
                         for(var i=0; i<users.length; i++){
                             dothis(users[i]);
@@ -120,7 +149,8 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
 
             return {
                 getUser : getUser,
-                updateBarcode : updateBarcode,
+                getColleges : getColleges,
+                updateBarcodeAndCollege : updateBarcodeAndCollege,
                 syncEdits : syncEdits,
                 syncNew : syncNew,
                 getAll : getAll
@@ -135,6 +165,10 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 if($scope.existing) $scope.existing = false
                 else $scope.existing = true
             }
+
+            Helper.getColleges(function(res){
+                    $scope.collegelist=res
+                });
 
             $scope.getAll = function(){
                 Helper.getAll();
@@ -181,13 +215,14 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 $scope.found = false
             }
 
-            $scope.updateUserBarcode = function(){
+            $scope.updateUserBarcodeAndCollege = function(){
                 if($scope.barcodeID.trim()==null)
                     return
 
                 $scope.profile.barcodeID = $scope.barcodeID
-
                 function failure_callback(err){
+                    if(err.status!=0)
+                        return
                     $indexedDB.openStore('edits', function(store){
                         store.upsert($scope.profile).then(function(r){
                             console.log("Added an edit to LocalDB for pushing to server later")
@@ -202,17 +237,22 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                     })
                 }
 
-                Helper.updateBarcode($scope.profile.festID, $scope.barcodeID, success_callback, failure_callback);
+                Helper.updateBarcodeAndCollege($scope.profile.festID, $scope.barcodeID, $scope.profile.college, success_callback, failure_callback);
             }
 
             $scope.newUser = function (){
+                if($scope.user.college == null){
+                    alert("Please Enter a College");
+                    return
+                }
+                $scope.user.college=$scope.user.college._id
                 if($scope.confirm_password != $scope.user.password){
                     $scope.same=false
                     return
                 }
                 else
                     $scope.same=true
-                console.log($scope.user)
+                // console.log($scope.user)
                 $http({
                     method:'POST',
                     url: 'http://localhost:8001/api/users',
@@ -225,7 +265,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                     $scope.confirm_password=null
                 },
                 function(err){
-                    alert(err.data)
+                    alert("We encountered some error")
                     if(err.status!=0)
                         return
                     $indexedDB.openStore('new', function(store){

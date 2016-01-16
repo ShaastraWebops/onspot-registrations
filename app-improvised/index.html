@@ -11,7 +11,7 @@
     <div ng-show="existing">
     <form ng-submit="getUserByFestID()">
         Enter Shaastra ID: <input type="text" ng-model="festID" />
-        <input type="submit" value="Submit">
+        <input type="submit" value="Get">
         <!-- <button ng-click="getUserByFestID()">Submit</button>  -->
         <button ng-click="clear()">Clear</button>
         <button ng-click="getAll()">Sync</button><br><br>
@@ -71,7 +71,15 @@
         </tr>
         <tr>
             <td>College/School Name:</td>
-            <td ng-show="existing">{{profile.college}}</td>
+            <td ng-show="existing">
+                <select ng-model="profile.college" ng-options="college.collegeName for college in collegelist track by college._id">
+                    <!-- <option value="">---Please Select---</option> -->
+                </select>
+            </td>
+            <td ng-hide="existing">
+                <select ng-model="user.college" ng-options="college.collegeName for college in collegelist track by college._id">
+                </select>
+            </td>
         </tr>
         <tr>
             <td>School Student?:</td>
@@ -86,8 +94,7 @@
     </table>
     <input ng-hide="existing" type="submit" value="Submit">
     </form>
-    <br>
-    <button ng-show="existing&&found" ng-click="updateUserBarcode()">Update Barcode</button>
+    <button ng-show="existing&&found" ng-click="updateUserBarcodeAndCollege()">Update</button>
 </div>
 </body>
 </html>
