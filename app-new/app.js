@@ -58,14 +58,13 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 }
             }
 
-            function updateBarcodeAndCollege(festID, barcodeID, college, success_callback, failure_callback){
+            function update(user, success_callback, failure_callback){
+                user.college = user.college._id
                 $http({
                     method:'POST',
-                    url:'http://localhost:8001/api/users/onsiteEdit',
+                    url:'http://localhost:8001/api/users/updateEverything',
                     data: {
-                        'festID': festID,
-                        'barcodeID': barcodeID,
-                        'collegeID': college._id
+                        'userUpdate':user
                     }
                 })
                 .success(success_callback)
@@ -150,7 +149,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
             return {
                 getUser : getUser,
                 getColleges : getColleges,
-                updateBarcodeAndCollege : updateBarcodeAndCollege,
+                update : update,
                 syncEdits : syncEdits,
                 syncNew : syncNew,
                 getAll : getAll
@@ -161,6 +160,55 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
             $scope.found = false
             $scope.error_msg = null
             $scope.same = true
+            $scope.edit = false
+
+            function settings(){
+                if(!$scope.found && !$scope.existing){
+                    $scope.user={}
+                    $scope.user.gender = true
+                    $scope.user.wantAccomodation = false
+                    $scope.user.schoolStudent = false
+                }
+            }
+            settings();
+
+            $scope.streams = [
+              'Aeronautical / Aerospace Engineering',
+              'Chemical / Petroleum Engineering',
+              'Civil Engineering',
+              'Commerce',
+              'Computer Science Engineering',
+              'Electrical Engineering / Electronics & Telecommunication',
+              'Humanities',
+              'Information Technology / Information Science',
+              'Mechanical Engineering',
+              'Metallurgical Engineering',
+              'Pure Sciences',
+              'Others'
+            ];
+
+            $scope.states = [
+              'Andhra Pradesh',
+              'Delhi',
+              'Goa',
+              'Karnataka',
+              'Kerala',
+              'Madhya Pradesh',
+              'Maharashtra',
+              'Pondicherry',
+              'Tamil Nadu',
+              'Telangana',
+              'Other State',
+              'International'
+            ];
+
+            $scope.degrees = [
+              'Bachelors',
+              'Masters',
+              'PhD',
+              'None'
+            ];
+
             $scope.toggle = function(){
                 if($scope.existing) $scope.existing = false
                 else $scope.existing = true
@@ -182,7 +230,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 var festID = $scope.festID
                 var local = function(res){
                     $scope.profile = res
-                    $scope.barcodeID = res.barcodeID
+                    // $scope.barcodeID = res.barcodeID
                     $scope.found = true
                 }
 
@@ -199,7 +247,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 var failure = function(err){
                     console.log(err)
                     $scope.profile = null
-                    $scope.barcodeID = null
+                    // $scope.barcodeID = null
                     $scope.found = false
                     $scope.error_msg = "Can't find user with given Shaastra ID"
                 }
@@ -209,17 +257,24 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
 
             $scope.clear = function(){
                 $scope.festID = null
-                $scope.barcodeID = null
+                // $scope.barcodeID = null
                 $scope.error_msg = null
                 $scope.profile = null
                 $scope.found = false
             }
 
-            $scope.updateUserBarcodeAndCollege = function(){
-                if($scope.barcodeID.trim()==null)
-                    return
+            $scope.editUser = function(){
+                $scope.original_profile = JSON.parse(JSON.stringify($scope.profile))
+                $scope.edit = true
+            }
 
-                $scope.profile.barcodeID = $scope.barcodeID
+            $scope.discardEdit = function(){
+                $scope.edit = false
+                $scope.profile = $scope.original_profile
+            }
+
+            $scope.updateUser = function(){
+
                 function failure_callback(err){
                     if(err.status!=0)
                         return
@@ -231,13 +286,17 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 }
 
                 function success_callback(res){
-                    alert("Success")
                     $indexedDB.openStore('user', function(store){
-                        store.upsert($scope.profile)
+                        store.upsert(res).then(function(r){
+                            $scope.profile = res
+                            // console.log(res)
+                        })
                     })
+                    $scope.edit = false
+                    alert("Success")
                 }
 
-                Helper.updateBarcodeAndCollege($scope.profile.festID, $scope.barcodeID, $scope.profile.college, success_callback, failure_callback);
+                Helper.update($scope.profile, success_callback, failure_callback);
             }
 
             $scope.newUser = function (){
@@ -263,6 +322,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                     Helper.getAll();
                     $scope.user=null
                     $scope.confirm_password=null
+                    settings();
                 },
                 function(err){
                     alert("We encountered some error")
