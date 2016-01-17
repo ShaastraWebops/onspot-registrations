@@ -8,35 +8,41 @@
 <h1>{{existing ? "For Registered Users:" : "For New Users:"}}</h1><button ng-click="toggle()">{{existing ? "New User?" : "Existing User?"}}</button><br><br>
 <div>
     <div ng-show="existing">
-    Enter Shaastra ID: <input type="text" ng-model="festID" />
-    <button ng-click="getUserByFestID()">Submit</button>  <button ng-click="clear()">Clear</button><br><br>
+    <form ng-submit="getUserByFestID()">
+        Enter Shaastra ID: <input type="text" ng-model="festID" />
+        <input type="submit" value="Get">
+        <!-- <button ng-click="getUserByFestID()">Submit</button>  -->
+        <button ng-click="clear()">Clear</button>
+    </form>
     </div>
     <div ng-hide="found||!existing" style="color:red">{{error_msg}}</div>
+    <button ng-click="editUser()" ng-show="found&&existing">Edit</button>
+    <button ng-click="discardEdit()" ng-show="edit&&existing">Discard Changes</button>
     <form ng-submit="newUser()">
     <table ng-show="found||!existing">
         <tr>
             <td>First Name:</td>
-            <td ng-show="existing">{{profile.name}}</td>
+            <td ng-show="existing"><input type="text" ng-model="profile.name" ng-disabled="!edit" required></td>
             <td ng-hide="existing"><input type="text" ng-model="user.name" required></td>
         </tr>
         <tr>
             <td>Last Name:</td>
-            <td ng-show="existing">{{profile.secondName}}</td>
+            <td ng-show="existing"><input type="text" ng-model="profile.secondName" ng-disabled="!edit"></td>
             <td ng-hide="existing"><input type="text" ng-model="user.secondName"></td>
         </tr>
         <tr>
             <td>Gender:</td>
-            <td ng-show="existing">{{profile.gender == true ? "male" : "female"}}</td>
+            <td ng-show="existing">Male:<input type="radio" ng-model="profile.gender" ng-value=true ng-disabled="!edit">  Female: <input type="radio" ng-model="profile.gender" ng-value=false ng-disabled="!edit"></td>
             <td ng-hide="existing">Male: <input type="radio" ng-model="user.gender" ng-value=true>  Female: <input type="radio" ng-model="user.gender" ng-value=false></td>
         </tr>
         <tr>
             <td>Age:</td>
-            <td ng-show="existing">{{profile.age}}</td>
+            <td ng-show="existing"><input type="number" ng-model="profile.age" ng-disabled="!edit" required></td>
             <td ng-hide="existing"><input type="number" ng-model="user.age" required></td>
         </tr>
         <tr>
             <td>Email ID:</td>
-            <td ng-show="existing">{{profile.email}}</td>
+            <td ng-show="existing"><input type="text" ng-model="profile.email" ng-disabled="!edit" required></td>
             <td ng-hide="existing"><input type="text" ng-model="user.email" required></td>
         </tr>
         <tr ng-hide="existing">
@@ -50,38 +56,89 @@
         </tr>
         <tr>
             <td>City:</td>
-            <td ng-show="existing">{{profile.city}}</td>
+            <td ng-show="existing"><input type="text" ng-model="profile.city" ng-disabled="!edit" required></td>
             <td ng-hide="existing"><input type="text" ng-model="user.city" required></td>
         </tr>
         <tr>
+            <td>State:</td>
+            <td ng-show="existing">
+                <select ng-model="profile.state" ng-disabled="!edit" required>
+                    <option value=""></option>
+                    <option ng-repeat="state in states">{{state}}</option>
+                </select>
+            </td>
+            <td ng-hide="existing">
+                <select ng-model="user.state" required>
+                    <option value=""></option>
+                    <option ng-repeat="state in states">{{state}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
             <td>Mobile Number:</td>
-            <td ng-show="existing">{{profile.phoneNumber}}</td>
+            <td ng-show="existing"><input type="text" ng-model="profile.phoneNumber" ng-disabled="!edit" required></td>
             <td ng-hide="existing"><input type="number" ng-model="user.phoneNumber" required></td>
         </tr>
         <tr>
             <td>Want Accomodation? :</td>
-            <td ng-show="existing">{{profile.wantAccomodation ? "Yes": "No"}}</td>
+            <td ng-show="existing">Yes:<input type="radio" ng-model="profile.wantAccomodation" ng-value=true ng-disabled="!edit"> No:<input type="radio" ng-model="profile.wantAccomodation" ng-value=false ng-disabled="!edit"></td>
             <td ng-hide="existing">Yes:<input type="radio" ng-model="user.wantAccomodation" ng-value=true> No:<input type="radio" ng-model="user.wantAccomodation" ng-value=false></td>
         </tr>
         <tr>
+            <td>Degree:</td>
+            <td ng-show="existing">
+                <select ng-model="profile.degree" ng-disabled="!edit" required>
+                    <option value=""></option>
+                    <option ng-repeat="degree in degrees">{{degree}}</option>
+                </select>
+            </td>
+            <td ng-hide="existing">
+                <select ng-model="user.degree" required>
+                    <option value=""></option>
+                    <option ng-repeat="degree in degrees">{{degree}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Stream:</td>
+            <td ng-show="existing">
+                <select ng-model="profile.stream" ng-disabled="!edit" required>
+                    <option value=""></option>
+                    <option ng-repeat="stream in streams">{{stream}}</option>
+                </select>
+            </td>
+            <td ng-hide="existing">
+                <select ng-model="user.stream" required>
+                    <option value=""></option>
+                    <option ng-repeat="stream in streams">{{stream}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
             <td>College/School Name:</td>
-            <td ng-show="existing">{{profile.college}}</td>
+            <td ng-show="existing">
+                <select ng-model="profile.college" ng-options="college.collegeName for college in collegelist track by college._id" ng-disabled="!edit">
+                </select>
+            </td>
+            <td ng-hide="existing">
+                <select ng-model="user.college" ng-options="college.collegeName for college in collegelist track by college._id">
+                </select>
+            </td>
         </tr>
         <tr>
             <td>School Student?:</td>
-            <td ng-show="existing">{{profile.schoolStudent? "Yes": "No"}}</td>
+            <td ng-show="existing">Yes:<input type="radio" ng-model="profile.schoolStudent" ng-disabled="!edit" ng-value=true> No:<input type="radio" ng-model="profile.schoolStudent" ng-disabled="!edit" ng-value=false></td>
             <td ng-hide="existing">Yes:<input type="radio" ng-model="user.schoolStudent" ng-value=true> No:<input type="radio" ng-model="user.schoolStudent" ng-value=false></td>
         </tr>
         <tr>
             <td>Barcode ID:</td>
-            <td ng-show="existing"><input type="text" ng-model="barcodeID" /></td>
+            <td ng-show="existing"><input type="text" ng-model="profile.barcodeID" ng-disabled="!edit" /></td>
             <td ng-hide="existing"><input type="text" ng-model="user.barcodeID" required/></td>
         </tr>
     </table>
     <input ng-hide="existing" type="submit" value="Submit">
     </form>
-    <br><br>
-    <button ng-show="existing&&found" ng-click="updateUserBarcode()">Update Barcode</button>
+    <button ng-show="existing&&found&&edit" ng-click="updateUser()">Save changes</button>
 </div>
 </body>
 </html>
