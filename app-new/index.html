@@ -133,9 +133,9 @@
             <td ng-hide="existing">Yes:<input type="radio" ng-model="user.schoolStudent" ng-value=true> No:<input type="radio" ng-model="user.schoolStudent" ng-value=false></td>
         </tr>
         <tr>
-            <td>Barcode ID:</td>
-            <td ng-show="existing"><input type="text" ng-model="profile.barcodeID" ng-disabled="!edit" /></td>
-            <td ng-hide="existing"><input type="text" ng-model="user.barcodeID" required/></td>
+            <td ng-show="existing">Barcode ID:</td>
+            <td ng-show="existing"><input type="text" ng-model="profile.barcodeID" ng-disabled="!edit" ng-keyup="$event.keyCode==13 && updateUser()"/></td>
+            <!-- <td ng-hide="existing"><input type="text" ng-model="user.barcodeID" required/></td> -->
         </tr>
     </table>
     <input ng-hide="existing" type="submit" value="Submit">

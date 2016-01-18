@@ -314,11 +314,11 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 // console.log($scope.user)
                 $http({
                     method:'POST',
-                    url: 'http://localhost:8001/api/users',
+                    url: 'http://localhost:8001/api/users/onspot',
                     data: $scope.user
                 })
                 .then(function(res){
-                    alert("Success")
+                    alert("Success : Your Shaastra ID is: "+res.data)
                     Helper.getAll();
                     $scope.user=null
                     $scope.confirm_password=null

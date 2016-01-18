@@ -1,6 +1,8 @@
 angular.module('OnsiteRegistrationApp', [])
        .controller('MainCtrl',['$http', '$scope', function($http, $scope){
 
+        var URL_PREFIX = 'http://localhost:8001/api/'
+
         $scope.found = false
         $scope.error_msg = null
         $scope.same = true
@@ -75,7 +77,7 @@ angular.module('OnsiteRegistrationApp', [])
 
             $http({
                 method:'POST',
-                url:'http://shaastra.org:8001/api/users/festid',
+                url: URL_PREFIX + 'users/festid',
                 data: {
                     'festID':$scope.festID
                 }
@@ -109,7 +111,7 @@ angular.module('OnsiteRegistrationApp', [])
             $scope.profile.college = $scope.profile.college._id
             $http({
                 method:'POST',
-                url:'http://shaastra.org:8001/api/users/updateEverything',
+                url: URL_PREFIX + 'users/updateEverything',
                 data: {
                     'userUpdate':$scope.profile
                 }
@@ -126,7 +128,7 @@ angular.module('OnsiteRegistrationApp', [])
 
         function getColleges(){
             $http({
-                url:"http://shaastra.org:8001/api/colleges/",
+                url: URL_PREFIX + "colleges/",
                 method:'GET'
             })
             .success(function(response){
@@ -144,12 +146,13 @@ angular.module('OnsiteRegistrationApp', [])
             console.log($scope.user)
             $http({
                 method:'POST',
-                url: 'http://shaastra.org:8001/api/users',
+                url: URL_PREFIX + 'users/onspot',
                 data: $scope.user
             })
             .then(function(res){
-                alert("Success")
+                alert("Success: Your Shaastra ID is: "+res.data);
                 settings();
+                $scope.confirm_password=""
             },
             function(err){
                 alert("We encountered some error")
