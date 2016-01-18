@@ -75,7 +75,7 @@ angular.module('OnsiteRegistrationApp', [])
 
             $http({
                 method:'POST',
-                url:'http://localhost:8001/api/users/festid',
+                url:'http://shaastra.org:8001/api/users/festid',
                 data: {
                     'festID':$scope.festID
                 }
@@ -102,14 +102,14 @@ angular.module('OnsiteRegistrationApp', [])
             $scope.error_msg = null
             $scope.profile = null
             $scope.found = false
-        }
+        };
 
         $scope.updateUser = function (){
             var college = JSON.parse(JSON.stringify($scope.profile.college));
             $scope.profile.college = $scope.profile.college._id
             $http({
                 method:'POST',
-                url:'http://localhost:8001/api/users/updateEverything',
+                url:'http://shaastra.org:8001/api/users/updateEverything',
                 data: {
                     'userUpdate':$scope.profile
                 }
@@ -126,7 +126,7 @@ angular.module('OnsiteRegistrationApp', [])
 
         function getColleges(){
             $http({
-                url:"http://localhost:8001/api/colleges/",
+                url:"http://shaastra.org:8001/api/colleges/",
                 method:'GET'
             })
             .success(function(response){
@@ -144,7 +144,7 @@ angular.module('OnsiteRegistrationApp', [])
             console.log($scope.user)
             $http({
                 method:'POST',
-                url: 'http://localhost:8001/api/users',
+                url: 'http://shaastra.org:8001/api/users',
                 data: $scope.user
             })
             .then(function(res){
