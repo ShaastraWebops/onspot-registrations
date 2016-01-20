@@ -59,7 +59,6 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
             }
 
             function update(user, success_callback, failure_callback){
-                user.college = user.college._id
                 $http({
                     method:'POST',
                     url:'http://localhost:8001/api/users/updateEverything',
@@ -275,11 +274,14 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
 
             $scope.updateUser = function(){
 
+                var profile_copy = JSON.parse(JSON.stringify($scope.profile));
+                profile_copy.college = profile_copy.college._id
+
                 function failure_callback(err){
                     if(err.status!=0)
                         return
                     $indexedDB.openStore('edits', function(store){
-                        store.upsert($scope.profile).then(function(r){
+                        store.upsert(profile_copy).then(function(r){
                             console.log("Added an edit to LocalDB for pushing to server later")
                         })
                     })
@@ -296,7 +298,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                     alert("Success")
                 }
 
-                Helper.update($scope.profile, success_callback, failure_callback);
+                Helper.update(profile_copy, success_callback, failure_callback);
             }
 
             $scope.newUser = function (){
@@ -304,7 +306,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                     alert("Please Enter a College");
                     return
                 }
-                $scope.user.college=$scope.user.college._id
+                // $scope.user.college=$scope.user.college._id
                 if($scope.confirm_password != $scope.user.password){
                     $scope.same=false
                     return

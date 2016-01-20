@@ -3,19 +3,24 @@
     <title>Onsite Registration</title>
     <script type="text/javascript" src="angular.min.js"></script>
     <script type="text/javascript" src="app.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="bootstrap.min.css"> -->
 </head>
 <body ng-controller="MainCtrl">
 <h1>{{existing ? "For Registered Users:" : "For New Users:"}}</h1><button ng-click="toggle()">{{existing ? "New User?" : "Existing User?"}}</button><br><br>
 <div>
     <div ng-show="existing">
-    <form ng-submit="getUserByFestID()">
-        Enter Shaastra ID: <input type="text" ng-model="festID" />
-        <input type="submit" value="Get">
-        <!-- <button ng-click="getUserByFestID()">Submit</button>  -->
-        <button ng-click="clear()">Clear</button>
-    </form>
+    Enter Shaastra ID: <input type="text" ng-model="festID" ng-keyup="$event.keyCode==13 && getUserByFestID()"/>
+    <button ng-click="getUserByFestID()">Get</button>
+    <button ng-click="clear()">Clear</button>
     </div>
+    <br ng-show="existing"><br ng-show="existing">
     <div ng-hide="found||!existing" style="color:red">{{error_msg}}</div>
+    <div ng-show="existing&&found">
+    <label>Barcode ID:</label>
+    <input type="text" ng-model="profile.barcodeID"/>
+    <button ng-click="updateUser()" ng-show="found&&existing">Update</button>
+    </div>
+    <br ng-show="existing"><br ng-show="existing">
     <button ng-click="editUser()" ng-show="found&&existing">Edit</button>
     <button ng-click="discardEdit()" ng-show="edit&&existing">Discard Changes</button>
     <form ng-submit="newUser()">
@@ -43,11 +48,12 @@
         <tr>
             <td>Email ID:</td>
             <td ng-show="existing"><input type="text" ng-model="profile.email" ng-disabled="!edit" required></td>
-            <td ng-hide="existing"><input type="text" ng-model="user.email" required></td>
+            <td ng-hide="existing"><input type="text" ng-model="user.email" ng-keyup="user.password=user.email; confirm_password=user.email" required></td>
         </tr>
         <tr ng-hide="existing">
             <td>Password:</td>
-            <td><input type="password" ng-model="user.password" required></td>
+            <td><input type="password" ng-model="user.password" required>
+            <span style="color:red">*Your email address is your default password</span></td>
         </tr>
         <tr ng-hide="existing">
             <td>Confirm Password:</td>
@@ -129,11 +135,6 @@
             <td>School Student?:</td>
             <td ng-show="existing">Yes:<input type="radio" ng-model="profile.schoolStudent" ng-disabled="!edit" ng-value=true> No:<input type="radio" ng-model="profile.schoolStudent" ng-disabled="!edit" ng-value=false></td>
             <td ng-hide="existing">Yes:<input type="radio" ng-model="user.schoolStudent" ng-value=true> No:<input type="radio" ng-model="user.schoolStudent" ng-value=false></td>
-        </tr>
-        <tr>
-            <td ng-show="existing">Barcode ID:</td>
-            <td ng-show="existing"><input type="text" ng-model="profile.barcodeID" ng-disabled="!edit" ng-keyup="$event.keyCode==13 && updateUser()" /></td>
-            <!-- <td ng-hide="existing"><input type="text" ng-model="user.barcodeID" required/></td> -->
         </tr>
     </table>
     <input ng-hide="existing" type="submit" value="Submit">

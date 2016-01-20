@@ -7,6 +7,7 @@ angular.module('OnsiteRegistrationApp', [])
         $scope.error_msg = null
         $scope.same = true
         $scope.edit = false
+        $scope.festID = "SHA160"
 
         function settings(){
             if(!$scope.found && !$scope.existing){
@@ -99,7 +100,7 @@ angular.module('OnsiteRegistrationApp', [])
         }
 
         $scope.clear = function(){
-            $scope.festID = null
+            $scope.festID = "SHA160"
             $scope.barcodeID = null
             $scope.error_msg = null
             $scope.profile = null
@@ -107,8 +108,6 @@ angular.module('OnsiteRegistrationApp', [])
         };
 
         $scope.updateUser = function (){
-            var college = JSON.parse(JSON.stringify($scope.profile.college));
-            $scope.profile.college = $scope.profile.college._id
             $http({
                 method:'POST',
                 url: URL_PREFIX + 'users/updateEverything',
@@ -118,7 +117,6 @@ angular.module('OnsiteRegistrationApp', [])
             })
             .success(function(response){
                 $scope.edit = false;
-                $scope.profile.college = college
                 alert("Success");
             })
             .error(function(response){
@@ -153,6 +151,7 @@ angular.module('OnsiteRegistrationApp', [])
                 alert("Success: Your Shaastra ID is: "+res.data);
                 settings();
                 $scope.confirm_password=""
+                $scope.user = null
             },
             function(err){
                 alert("We encountered some error")
