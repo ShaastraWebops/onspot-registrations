@@ -3,143 +3,230 @@
     <title>Onsite Registration</title>
     <script type="text/javascript" src="angular.min.js"></script>
     <script type="text/javascript" src="app.js"></script>
-    <!-- <link rel="stylesheet" type="text/css" href="bootstrap.min.css"> -->
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="test.css">
 </head>
-<body ng-controller="MainCtrl">
-<h1>{{existing ? "For Registered Users:" : "For New Users:"}}</h1><button ng-click="toggle()">{{existing ? "New User?" : "Existing User?"}}</button><br><br>
+
+<body ng-controller="MainCtrl" style="padding: 10 0 0 10">
+<div align="right" style="padding-right:15px"><button ng-click="toggle()" class="btn btn-primary">{{ existing ? "New User?" : "Existing User?"}}</button><br><br></div>
+<div ng-show="existing" class="panel panel-default">
+<div class="panel-body" style="padding-top:0px">
+<h2>For Registered Users:</h2>
+<br><br>
 <div>
-    <div ng-show="existing">
-    Enter Shaastra ID: <input type="text" ng-model="festID" ng-keyup="$event.keyCode==13 && getUserByFestID()"/>
-    <button ng-click="getUserByFestID()">Get</button>
-    <button ng-click="clear()">Clear</button>
-    </div>
-    <br ng-show="existing"><br ng-show="existing">
-    <div ng-hide="found||!existing" style="color:red">{{error_msg}}</div>
-    <div ng-show="existing&&found">
-    <label>Barcode ID:</label>
-    <input type="text" ng-model="profile.barcodeID"/>
-    <button ng-click="updateUser()" ng-show="found&&existing">Update</button>
-    </div>
-    <br ng-show="existing"><br ng-show="existing">
-    <button ng-click="editUser()" ng-show="found&&existing">Edit</button>
-    <button ng-click="discardEdit()" ng-show="edit&&existing">Discard Changes</button>
-    <form ng-submit="newUser()">
-    <table ng-show="found||!existing">
+    <form role="form" class="form-inline">
+        <div class="form-group">
+        <table>
         <tr>
-            <td>First Name:</td>
-            <td ng-show="existing"><input type="text" ng-model="profile.name" ng-disabled="!edit" required></td>
-            <td ng-hide="existing"><input type="text" ng-model="user.name" required></td>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="festid">Enter Shaastra ID:</label></td>
+            <td><input class="form-control" id="festid" type="text" ng-model="festID" ng-keyup="$event.keyCode==13 && getUserByFestID()"/></td>
+            <!-- <td>&nbsp;</td> -->
+        <td ><button class="btn btn-primary" ng-click="getUserByFestID()" ng-disabled="get_processing">{{get_button}}</button></td>
+        <td ><button class="btn btn-primary" ng-click="clear()">Clear</button></td>
         </tr>
-        <tr>
-            <td>Last Name:</td>
-            <td ng-show="existing"><input type="text" ng-model="profile.secondName" ng-disabled="!edit"></td>
-            <td ng-hide="existing"><input type="text" ng-model="user.secondName"></td>
-        </tr>
-        <tr>
-            <td>Gender:</td>
-            <td ng-show="existing">Male:<input type="radio" ng-model="profile.gender" ng-value=true ng-disabled="!edit">  Female: <input type="radio" ng-model="profile.gender" ng-value=false ng-disabled="!edit"></td>
-            <td ng-hide="existing">Male: <input type="radio" ng-model="user.gender" ng-value=true>  Female: <input type="radio" ng-model="user.gender" ng-value=false></td>
-        </tr>
-        <tr>
-            <td>Age:</td>
-            <td ng-show="existing"><input type="number" ng-model="profile.age" ng-disabled="!edit" required></td>
-            <td ng-hide="existing"><input type="number" ng-model="user.age" required></td>
-        </tr>
-        <tr>
-            <td>Email ID:</td>
-            <td ng-show="existing"><input type="text" ng-model="profile.email" ng-disabled="!edit" required></td>
-            <td ng-hide="existing"><input type="text" ng-model="user.email" ng-keyup="user.password=user.email; confirm_password=user.email" required></td>
-        </tr>
-        <tr ng-hide="existing">
-            <td>Password:</td>
-            <td><input type="password" ng-model="user.password" required>
-            <span style="color:red">*Your email address is your default password</span></td>
-        </tr>
-        <tr ng-hide="existing">
-            <td>Confirm Password:</td>
-            <td><input type="password" ng-model="confirm_password" required></td>
-            <td ng-hide="same"> The password does not match the above one </td>
-        </tr>
-        <tr>
-            <td>City:</td>
-            <td ng-show="existing"><input type="text" ng-model="profile.city" ng-disabled="!edit" required></td>
-            <td ng-hide="existing"><input type="text" ng-model="user.city" required></td>
-        </tr>
-        <tr>
-            <td>State:</td>
-            <td ng-show="existing">
-                <select ng-model="profile.state" ng-disabled="!edit" required>
-                    <option value=""></option>
-                    <option ng-repeat="state in states">{{state}}</option>
-                </select>
-            </td>
-            <td ng-hide="existing">
-                <select ng-model="user.state" required>
-                    <option value=""></option>
-                    <option ng-repeat="state in states">{{state}}</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>Mobile Number:</td>
-            <td ng-show="existing"><input type="text" ng-model="profile.phoneNumber" ng-disabled="!edit" required></td>
-            <td ng-hide="existing"><input type="number" ng-model="user.phoneNumber" required></td>
-        </tr>
-        <tr>
-            <td>Want Accomodation? :</td>
-            <td ng-show="existing">Yes:<input type="radio" ng-model="profile.wantAccomodation" ng-value=true ng-disabled="!edit"> No:<input type="radio" ng-model="profile.wantAccomodation" ng-value=false ng-disabled="!edit"></td>
-            <td ng-hide="existing">Yes:<input type="radio" ng-model="user.wantAccomodation" ng-value=true> No:<input type="radio" ng-model="user.wantAccomodation" ng-value=false></td>
-        </tr>
-        <tr>
-            <td>Degree:</td>
-            <td ng-show="existing">
-                <select ng-model="profile.degree" ng-disabled="!edit" required>
-                    <option value=""></option>
-                    <option ng-repeat="degree in degrees">{{degree}}</option>
-                </select>
-            </td>
-            <td ng-hide="existing">
-                <select ng-model="user.degree" required>
-                    <option value=""></option>
-                    <option ng-repeat="degree in degrees">{{degree}}</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>Stream:</td>
-            <td ng-show="existing">
-                <select ng-model="profile.stream" ng-disabled="!edit" required>
-                    <option value=""></option>
-                    <option ng-repeat="stream in streams">{{stream}}</option>
-                </select>
-            </td>
-            <td ng-hide="existing">
-                <select ng-model="user.stream" required>
-                    <option value=""></option>
-                    <option ng-repeat="stream in streams">{{stream}}</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>College/School Name:</td>
-            <td ng-show="existing">
-                <select ng-model="profile.college" ng-options="college.collegeName for college in collegelist track by college._id" ng-disabled="!edit">
-                </select>
-            </td>
-            <td ng-hide="existing">
-                <select ng-model="user.college" ng-options="college.collegeName for college in collegelist track by college._id">
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>School Student?:</td>
-            <td ng-show="existing">Yes:<input type="radio" ng-model="profile.schoolStudent" ng-disabled="!edit" ng-value=true> No:<input type="radio" ng-model="profile.schoolStudent" ng-disabled="!edit" ng-value=false></td>
-            <td ng-hide="existing">Yes:<input type="radio" ng-model="user.schoolStudent" ng-value=true> No:<input type="radio" ng-model="user.schoolStudent" ng-value=false></td>
-        </tr>
-    </table>
-    <input ng-hide="existing" type="submit" value="Submit">
+        </table>
+        </div>
     </form>
-    <button ng-show="existing&&found&&edit" ng-click="updateUser()">Save changes</button>
+    <br><br>
+
+    <div ng-hide="found" style="color:red;font-size:25px">{{error_msg}}</div>
+
+    <form ng-show="found" ng-submit="updateUser()" role="form" class="form-inline">
+        <div class="form-group">
+        <table>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="barcode">Barcode ID:</label></td>
+            <td ><input class="form-control" id="barcode" type="text" ng-model="profile.barcodeID"/></td>
+        <td ><input class="btn btn-primary" type="submit" ng-disabled="edit_processing" ng-value="update_button"></td>
+        <!-- <td class="col-sm-4"></td> -->
+        </tr><tr><td>&nbsp;</td></tr>
+        </table>
+        </div>
+    </form>
+    <br><br>
+
+    <button class="btn btn-primary" ng-click="editUser()" ng-show="found">Edit</button>
+    <button class="btn btn-primary"  ng-click="discardEdit()" ng-show="edit" ng-disabled="edit_processing">Discard Changes</button>
+    <br><br>
+    <form ng-submit="updateUser()" ng-show="found" role="form" class="form-horizontal">
+        <div class="form-group">
+        <table>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="name">First Name:</label></td>
+            <td><input class="form-control" type="text" ng-model="profile.name" id="name" ng-disabled="!edit" required></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="secondName">Last Name:</label></td>
+            <td><input class="form-control" type="text" ng-model="profile.secondName" id="secondName" ng-disabled="!edit"></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="gender">Gender:</label></td>
+            <td><div id="gender">
+                <label for="male">Male:</label>
+                <input type="radio" id="male" name="sex" ng-model="profile.gender" ng-value=true ng-disabled="!edit">
+                <label for="female">Female:</label>
+                <input type="radio" id="female" name="sex" ng-model="profile.gender" ng-value=false ng-disabled="!edit">
+            </div></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="age">Age:</label></td>
+            <td><input class="form-control" type="number" ng-model="profile.age" id="age" ng-disabled="!edit" required></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="email">Email ID:</label></td>
+            <td><input class="form-control" type="text" ng-model="profile.email" id="email" ng-disabled="!edit" required></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="city">City:</label></td>
+            <td><input class="form-control" type="text" ng-model="profile.city" id="city" ng-disabled="!edit" required></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="state">State:</label></td>
+
+            <td><select ng-model="profile.state" id="state" ng-disabled="!edit" required>
+                <option value=""></option>
+                <option ng-repeat="state in states">{{state}}</option>
+            </select></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="phoneNumber">Mobile Number:</label></td>
+            <td><input class="form-control" type="text" ng-model="profile.phoneNumber" id="phoneNumber" ng-disabled="!edit" required></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="degree">Degree:</label></td>
+
+            <td><select ng-model="profile.degree" id="degree" ng-disabled="!edit" required>
+                <option value=""></option>
+                <option ng-repeat="degree in degrees">{{degree}}</option>
+            </select></td>
+
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="stream">Stream:</label></td>
+
+            <td><select ng-model="profile.stream" id="stream" ng-disabled="!edit" required>
+                <option value=""></option>
+                <option ng-repeat="stream in streams">{{stream}}</option>
+            </select></td>
+
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="college">College/School Name:</label></td>
+
+            <td><select ng-model="profile.college" id="college" ng-options="college.collegeName for college in collegelist track by college._id" ng-disabled="!edit">
+            </select></td>
+
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label">School Student?:</label></td>
+            <td><label for="yes">Yes:</label>
+            <input type="radio" id="yes" ng-model="profile.schoolStudent" ng-disabled="!edit" ng-value=true>
+            <label for="no">No:</label>
+            <input type="radio" id="no" ng-model="profile.schoolStudent" ng-disabled="!edit" ng-value=false></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        </table>
+        <input class="btn btn-primary" type="submit" ng-value="save_button" ng-disabled="edit_processing" ng-show="edit">
+
+        </div>
+    </form>
+    <!-- <button ng-show="found&&edit" ng-click="updateUser()">Save changes</button> -->
 </div>
+</div>
+</div>
+
+<div ng-hide="existing" class="panel panel-default">
+<div class="panel-body" style="padding-top:0px">
+<h2>For New Users:</h2>
+<br><br>
+<form ng-submit="newUser()" role="form" class="form-horizontal">
+    <div class="form-group">
+        <table>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="name">First Name:</label>
+            <td><input class="form-control" type="text" ng-model="user.name" id="name" align="right" required>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="secondName">Last Name:</label>
+            <td><input class="form-control" type="text" ng-model="user.secondName" align="right" id="secondName" >
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="gender">Gender:</label>
+            <td><div id="gender">
+                <label  for="male">Male:
+                <input  type="radio" id="male" name="sex" ng-model="user.gender" ng-value=true ><br></label>
+                &nbsp;&nbsp;
+                <label  for="female">Female:
+                <input  type="radio" id="female" name="sex" ng-model="user.gender" ng-value=false ></label>
+            </div>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="age">Age:</label>
+            <td><input class="form-control" type="number" ng-model="user.age" id="age" align="right" required>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="email">Email ID:</label>
+            <td><input class="form-control" type="text" ng-model="user.email" id="email" ng-keyup="user.password=user.email; confirm_password=user.email" required>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="pass">Password:</label>
+            <td><input class="form-control" type="password" id="pass" ng-model="user.password" required>
+            <span style="color:red">*Your email address is your default password</span>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="cnf_pass">Confirm Password:</label>
+            <td><input class="form-control" type="password" id="cnf_pass" ng-model="confirm_password" required>
+            <span ng-hide="same"> The password does not match the above one </span>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="city">City:</label>
+            <td><input class="form-control" type="text" ng-model="user.city" id="city"  required>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="state">State:</label>
+            <td><select class="form-control" ng-model="user.state" id="state"  required>
+                <option value=""></option>
+                <option ng-repeat="state in states">{{state}}</option>
+            </select>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="phoneNumber">Mobile Number:</label>
+            <td><input class="form-control" type="text" ng-model="user.phoneNumber" id="phoneNumber"  required>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="degree">Degree:</label>
+            <td><select class="form-control" ng-model="user.degree" id="degree"  required>
+                <option value=""></option>
+                <option ng-repeat="degree in degrees">{{degree}}</option>
+            </select>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="stream">Stream:</label>
+
+            <td><select class="form-control" ng-model="user.stream" id="stream"  required>
+                <option value=""></option>
+                <option ng-repeat="stream in streams">{{stream}}</option>
+            </select>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="college">College/School Name:</label>
+
+            <td><select class="form-control" ng-model="user.college" id="college" ng-options="college.collegeName for college in collegelist track by college._id" >
+            </select>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td  class="col-sm-3" style="text-align:right"><label class="control-label">School Student?:</label>
+            <td><label  for="yes">Yes:
+            <input  type="radio" id="yes" ng-model="user.schoolStudent"  ng-value=true></label>
+            &nbsp;&nbsp;&nbsp;
+            <label  for="no">No:
+            <input  type="radio" id="no" ng-model="user.schoolStudent"  ng-value=false></label>
+        </tr><tr><td>&nbsp;</td></tr>
+    </table>
+    </div>
+    <button class="btn btn-primary" style="margin-left:180px" ng-disabled="new_processing" type="submit">{{submit_button}}</button>
+</form>
+</div>
+</div>
+
 </body>
 </html>

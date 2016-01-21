@@ -1,0 +1,24 @@
+body{
+	line-height: 80%;
+	margin-top:0em;
+	margin-bottom: 1em;
+	font-family: "Verdana";
+	font-size: 10px
+}
+
+.panel-default{
+	padding-left: 15px;
+}
+
+.panel-body{
+	margin-bottom: 
+}
+
+tr{
+	margin-top: 15px;
+	border: 5px;
+}
+
+label{
+	font-weight: 500;
+}
