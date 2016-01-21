@@ -1,18 +1,42 @@
 
 var URL_PREFIX = 'http://shaastra.org:8001/api/'
 
-angular.module('OnsiteRegistrationApp', [])
-        .service('Helper', ['$http', function($http){
+angular.module('OnsiteRegistrationApp', ['indexedDB'])
+        .config(['$indexedDBProvider', function($indexedDBProvider){
+                    $indexedDBProvider
+                    .connection('LocalDataBase')
+                    .upgradeDatabase(1, function(event, db, tx){
+                        var collegeStore = db.createObjectStore('college', {keyPath:'_id'})
+                    })
+        }])
+        .service('Helper', ['$http', '$indexedDB', function($http, $indexedDB){
 
             return {
 
-                getColleges: function (callback){
-                          $http({
-                              url: URL_PREFIX + "colleges/",
-                              method:'GET'
-                          })
-                          .success(callback)
-                      },
+                getColleges: function (success_callback){
+                    if(localStorage.collegelist!=null){
+                        $indexedDB.openStore('college', function(store){
+                            store.getAll().then(function(colleges){
+                                success_callback(colleges)
+                            })
+                        })
+                    }
+                    else
+                    {
+                        $http({
+                            url: URL_PREFIX + "colleges/",
+                            method:'GET'
+                        })
+                        .success(function(response){
+                            $indexedDB.openStore('college', function(store){
+                                store.upsert(response).then(function(res){
+                                    localStorage.collegelist="Yeah"
+                                });
+                            })
+                            success_callback(response)
+                        })
+                    }
+                }
 
             }
         }])
