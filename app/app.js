@@ -1,5 +1,5 @@
 
-var URL_PREFIX = 'http://localhost:8001/api/'
+var URL_PREFIX = 'http://shaastra.org:8001/api/'
 
 angular.module('OnsiteRegistrationApp', ['indexedDB'])
         .config(['$indexedDBProvider', function($indexedDBProvider){
