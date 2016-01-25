@@ -1,5 +1,5 @@
 
-var URL_PREFIX = 'http://shaastra.org:8001/api/'
+var URL_PREFIX = 'http://localhost:8001/api/'
 
 angular.module('OnsiteRegistrationApp', ['indexedDB'])
         .config(['$indexedDBProvider', function($indexedDBProvider){
@@ -48,7 +48,8 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
             $scope.new_processing = false;
             $scope.get_processing = false;
 
-            $scope.get_button = "Get"
+            $scope.get_fest_button = "Get"
+            $scope.get_barcode_button = "Get"
             $scope.update_button = "Update"
             $scope.save_button = "Save changes"
             $scope.submit_button = "Submit"
@@ -120,7 +121,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 if($scope.festID==null)
                     return
                 $scope.get_processing = true
-                $scope.get_button = "Processing ..."
+                $scope.get_fest_button = "Processing ..."
                 $http({
                     method:'POST',
                     url: URL_PREFIX + 'users/festid',
@@ -131,10 +132,10 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 .then(function(res){
                     console.log(res)
                     $scope.profile = res.data
-                    $scope.barcodeID = res.data.barcodeID
                     $scope.found = true
                     $scope.get_processing = false
-                    $scope.get_button = "Get"
+                    $scope.get_fest_button = "Get"
+                    $scope.barcodeID = null
                 },
 
                 function(err){
@@ -143,7 +144,38 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                     $scope.found = false
                     $scope.error_msg = "Can't find user with given Shaastra ID"
                     $scope.get_processing = false
-                    $scope.get_button = "Get"
+                    $scope.get_fest_button = "Get"
+                })
+            }
+
+            $scope.getUserByBarcodeID = function (){
+                if($scope.barcodeID==null)
+                    return
+                $scope.get_processing = true
+                $scope.get_barcode_button = "Processing ..."
+                $http({
+                    method:'POST',
+                    url: URL_PREFIX + 'users/barcodeid',
+                    data: {
+                        'barcodeID':$scope.barcodeID
+                    }
+                })
+                .then(function(res){
+                    console.log(res)
+                    $scope.profile = res.data
+                    $scope.found = true
+                    $scope.get_processing = false
+                    $scope.get_barcode_button = "Get"
+                    $scope.festID = $scope.profile.festID
+                },
+
+                function(err){
+                    console.log(err)
+                    $scope.profile = null
+                    $scope.found = false
+                    $scope.error_msg = "Can't find user with given Shaastra ID"
+                    $scope.get_processing = false
+                    $scope.get_barcode_button = "Get"
                 })
             }
 
@@ -152,6 +184,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 $scope.error_msg = null
                 $scope.profile = null
                 $scope.found = false
+                $scope.barcodeID = null
             };
 
             $scope.updateUser = function (){

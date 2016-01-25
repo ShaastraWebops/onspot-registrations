@@ -22,7 +22,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                     function(err){
                         $http({
                             method:'POST',
-                            url:'http://localhost:8001/api/users/festid',
+                            url:'http://shaastra.org:8001/api/users/festid',
                             data:{
                                 'festID':festID
                             }
@@ -44,7 +44,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 else
                 {
                     $http({
-                        url:"http://localhost:8001/api/colleges/",
+                        url:"http://shaastra.org:8001/api/colleges/",
                         method:'GET'
                     })
                     .success(function(response){
@@ -61,7 +61,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
             function update(user, success_callback, failure_callback){
                 $http({
                     method:'POST',
-                    url:'http://localhost:8001/api/users/updateEverything',
+                    url:'http://shaastra.org:8001/api/users/updateEverything',
                     data: {
                         'userUpdate':user
                     }
@@ -100,7 +100,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                         function dothis(user){
                             $http({
                                 method : 'POST',
-                                url : 'http://localhost:8001/api/users',
+                                url : 'http://shaastra.org:8001/api/users',
                                 data : user
                             })
                             .success(function(res){
@@ -122,10 +122,10 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 console.log("Syncing like a ship")
                 $http({
                     method:'POST',
-                    url:'http://localhost:8001/api/users/servertime',
+                    url:'http://shaastra.org:8001/api/users/servertime',
                 })
                 .then(function(time){
-                    var url='http://localhost:8001/api/users/getAll'
+                    var url='http://shaastra.org:8001/api/users/getAll'
                     if(localStorage['last_fetched_date']!=null)
                         url = url + 'Since'
                     $http({
@@ -316,7 +316,7 @@ angular.module('OnsiteRegistrationApp', ['indexedDB'])
                 // console.log($scope.user)
                 $http({
                     method:'POST',
-                    url: 'http://localhost:8001/api/users/onspot',
+                    url: 'http://shaastra.org:8001/api/users/onspot',
                     data: $scope.user
                 })
                 .then(function(res){

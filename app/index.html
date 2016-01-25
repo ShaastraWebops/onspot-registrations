@@ -15,17 +15,34 @@
 <h2>For Registered Users:</h2>
 <br><br>
 <div>
-    <form role="form" class="form-inline">
+    <!-- <form role="form" class="form-inline">
         <div class="form-group">
         <table>
         <tr>
             <td class="col-sm-3" style="text-align:right"><label class="control-label" for="festid">Enter Shaastra ID:</label></td>
             <td><input class="form-control" id="festid" type="text" ng-model="festID" ng-keyup="$event.keyCode==13 && getUserByFestID()"/></td>
-            <!-- <td>&nbsp;</td> -->
-        <td ><button class="btn btn-primary" ng-click="getUserByFestID()" ng-disabled="get_processing">{{get_button}}</button></td>
+        <td ><button class="btn btn-primary" ng-click="getUserByFestID()" ng-disabled="get_processing">{{get_fest_button}}</button></td>
         <td ><button class="btn btn-primary" ng-click="clear()">Clear</button></td>
+        </tr><tr><td>&nbsp;</td></tr>
+        <tr>
+            <td class="col-sm-3" style="text-align:right"><label class="control-label" for="barcodeid">Enter barcode ID:</label></td>
+            <td><input class="form-control" id="barcodeid" type="text" ng-model="barcodeID" ng-keyup="$event.keyCode==13 && getUserByBarcodeID()"/></td>
+            <td ><button class="btn btn-primary" ng-click="getUserByBarcodeID()" ng-disabled="get_processing">{{get_barcode_button}}</button></td>
         </tr>
         </table>
+        </div>
+    </form> -->
+    <form role="form" class="form-inline">
+        <div class="form-group">
+            <label class="control-label" style="font-size:18px" for="festid">Enter Shaastra ID:</label>
+            <input class="form-control" id="festid" type="text" ng-model="festID" ng-keyup="$event.keyCode==13 && getUserByFestID()"/>
+            <button class="btn btn-primary" ng-click="getUserByFestID()" ng-disabled="get_processing">{{get_fest_button}}</button>
+            <span style="font-size:25px">&nbsp;&nbsp;&nbsp;OR&nbsp;&nbsp;&nbsp;</span>
+            <label class="control-label" style="font-size:18px" for="barcodeid">Enter barcode ID:</label>
+            <input class="form-control" id="barcodeid" type="text" ng-model="barcodeID" ng-keyup="$event.keyCode==13 && getUserByBarcodeID()"/>
+            <button class="btn btn-primary" ng-click="getUserByBarcodeID()" ng-disabled="get_processing">{{get_barcode_button}}</button>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <button class="btn btn-primary" ng-click="clear()">Clear</button>
         </div>
     </form>
     <br><br>
